@@ -2,7 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { formatCurrency, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from '@/lib/utils';
-import { Search } from 'lucide-react';
+import { Search, MapPin } from 'lucide-react';
 import type { Order, OrderStatus } from '@/types';
 
 import { adminService } from '@/src/services/admin.service';
@@ -193,11 +193,22 @@ function OrderDetailModal({
                     </div>
 
                     {/* Shipping */}
-                    <div className="bg-ocean-50 rounded-xl p-3 text-sm">
-                        <p className="font-semibold mb-1">Giao hàng</p>
-                        <p>{order.customerName} — {order.customerPhone}</p>
-                        <p className="text-slate-500">{order.shippingAddress?.address}, {order.shippingAddress?.district}, {order.shippingAddress?.province}</p>
-                        {order.note && <p className="text-slate-400 italic mt-1">"{order.note}"</p>}
+                    <div className="bg-ocean-50 rounded-2xl p-4 text-sm border border-ocean-100">
+                        <p className="font-bold text-ocean-800 mb-2 flex items-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            Thông tin nhận hàng
+                        </p>
+                        <div className="space-y-1 text-slate-700">
+                            <p className="font-semibold">{order.shipping?.name} — {order.shipping?.phone}</p>
+                            <p>{order.shipping?.address}</p>
+                            <p>{order.shipping?.ward}, {order.shipping?.district}, {order.shipping?.province}</p>
+                            {order.shipping?.note && (
+                                <div className="mt-3 p-2 bg-white/50 rounded-lg border border-ocean-100">
+                                    <p className="text-xs text-slate-400 font-medium uppercase mb-0.5">Lưu ý khách hàng</p>
+                                    <p className="text-slate-600 italic">"{order.shipping.note}"</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Change status */}
