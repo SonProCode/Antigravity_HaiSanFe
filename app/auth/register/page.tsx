@@ -46,7 +46,12 @@ export default function RegisterPage() {
 
             router.push('/auth/login?registered=true');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại');
+            const backendMessage = err.response?.data?.message;
+            if (Array.isArray(backendMessage)) {
+                setError(backendMessage.join(', '));
+            } else {
+                setError(backendMessage || 'Có lỗi xảy ra, vui lòng thử lại');
+            }
         } finally {
             setIsLoading(false);
         }
