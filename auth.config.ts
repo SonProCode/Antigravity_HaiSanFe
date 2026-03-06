@@ -13,7 +13,7 @@ export const authConfig = {
             const isProtectedPath = nextUrl.pathname.startsWith('/checkout') || nextUrl.pathname.startsWith('/account');
 
             if (isAdminPath) {
-                if (isLoggedIn && role === 'admin') return true;
+                if (isLoggedIn && role?.toLowerCase() === 'admin') return true;
                 return Response.redirect(new URL('/auth/login', nextUrl));
             }
 

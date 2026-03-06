@@ -50,7 +50,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         name: data.user.name,
                         email: data.user.email,
                         image: data.user.image,
-                        role: data.user.role,
+                        role: (data.user.role as string).toLowerCase(),
                         accessToken: data.accessToken,
                     };
                 } catch (error) {
