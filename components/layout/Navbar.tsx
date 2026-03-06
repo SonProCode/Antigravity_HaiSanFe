@@ -13,10 +13,15 @@ export default function Navbar() {
     const itemCount = useCartStore((s) => s.getItemCount());
     const setCartOpen = useCartStore((s) => s.setOpen);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     // Close dropdown on click outside
     useEffect(() => {
@@ -99,7 +104,7 @@ export default function Navbar() {
                             aria-label="Giỏ hàng"
                         >
                             <ShoppingCart className="w-5 h-5 text-slate-600" />
-                            {itemCount > 0 && (
+                            {isMounted && itemCount > 0 && (
                                 <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                                     {itemCount > 9 ? '9+' : itemCount}
                                 </span>
