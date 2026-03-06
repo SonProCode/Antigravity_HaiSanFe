@@ -5,50 +5,32 @@ import { formatCurrency, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from '@/lib/
 import { Search } from 'lucide-react';
 import type { Order, OrderStatus } from '@/types';
 
+import { adminService } from '@/src/services/admin.service';
+
 const ALL_STATUSES: OrderStatus[] = ['pending', 'confirmed', 'packed', 'shipped', 'delivered', 'cancelled'];
-
-async function fetchOrders(page = 1) {
-    const res = await fetch(`/api/orders?page=${page}&pageSize=15`);
-    return res.json();
-}
-
-async function updateOrderStatus(id: string, status: OrderStatus, note: string) {
-    const res = await fetch(`/api/orders/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, note }),
-    });
-    if (!res.ok) throw new Error('Failed to update');
-    return res.json();
-}
 
 export default function AdminOrdersPage() {
     const queryClient = useQueryClient();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
-    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
 
     const { data, isLoading } = useQuery({
-        queryKey: ['admin-orders', page],
-        queryFn: () => fetchOrders(page),
+        queryKey: ['admin-orders', page, search],
+        queryFn: () => adminService.getOrders({ page, orderCode: search, pageSize: 15 }),
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, status, note }: { id: string; status: OrderStatus; note: string }) =>
-            updateOrderStatus(id, status, note),
+        mutationFn: ({ id, status, note }: { id: string; status: string; note: string }) =>
+            adminService.updateOrderStatus(id, status, note),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
             setSelectedOrder(null);
         },
     });
 
-    const orders: Order[] = data?.data || [];
-    const filtered = orders.filter((o) =>
-        !search ||
-        o.orderId.toLowerCase().includes(search.toLowerCase()) ||
-        o.shipping?.name?.toLowerCase().includes(search.toLowerCase()) ||
-        o.shipping?.phone?.includes(search)
-    );
+    const orders: any[] = data?.data || [];
+    const filtered = orders; // Server-side search implemented in adminService
 
     return (
         <div className="space-y-4">
@@ -67,7 +49,7 @@ export default function AdminOrdersPage() {
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Tìm theo mã đơn, tên, SĐT..."
+                        placeholder="Tìm theo mã đơn..."
                         className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-ocean-400"
                     />
                 </div>
@@ -100,15 +82,15 @@ export default function AdminOrdersPage() {
                                     <tr key={o.id} className="hover:bg-slate-50 transition-colors">
                                         <td className="px-4 py-3">
                                             <p className="text-sm font-bold text-ocean-600">{o.orderId}</p>
-                                            <p className="text-xs text-slate-400">{o.items.length} sản phẩm</p>
+                                            <p className="text-xs text-slate-400">{o.items?.length || 0} sản phẩm</p>
                                         </td>
                                         <td className="px-4 py-3">
-                                            <p className="text-sm font-medium text-slate-800">{o.shipping?.name}</p>
-                                            <p className="text-xs text-slate-500">{o.shipping?.phone}</p>
+                                            <p className="text-sm font-medium text-slate-800">{o.customerName}</p>
+                                            <p className="text-xs text-slate-500">{o.customerPhone}</p>
                                         </td>
                                         <td className="px-4 py-3">
                                             <p className="text-sm font-semibold text-slate-800">{formatCurrency(o.total)}</p>
-                                            <p className="text-xs text-slate-400">{o.paymentMethod === 'cod' ? 'COD' : 'Chuyển khoản'}</p>
+                                            <p className="text-xs text-slate-400">{o.paymentMethod}</p>
                                         </td>
                                         <td className="px-4 py-3">
                                             <span className={`px-2 py-1 rounded-full text-xs font-semibold ${ORDER_STATUS_COLORS[o.status]}`}>
@@ -159,7 +141,7 @@ export default function AdminOrdersPage() {
                 <OrderDetailModal
                     order={selectedOrder}
                     onClose={() => setSelectedOrder(null)}
-                    onUpdateStatus={(status, note) => updateMutation.mutate({ id: selectedOrder.id, status, note })}
+                    onUpdateStatus={(status, note) => updateMutation.mutate({ id: selectedOrder.id, status: status.toUpperCase(), note })}
                     isUpdating={updateMutation.isPending}
                 />
             )}
@@ -173,7 +155,7 @@ function OrderDetailModal({
     onUpdateStatus,
     isUpdating,
 }: {
-    order: Order;
+    order: any;
     onClose: () => void;
     onUpdateStatus: (status: OrderStatus, note: string) => void;
     isUpdating: boolean;
@@ -197,7 +179,7 @@ function OrderDetailModal({
                     <div>
                         <h3 className="font-semibold text-slate-700 mb-2 text-sm">Sản phẩm</h3>
                         <div className="space-y-2">
-                            {order.items.map((item, i) => (
+                            {(order.items || []).map((item: any, i: number) => (
                                 <div key={i} className="flex justify-between text-sm py-1.5 border-b border-slate-50">
                                     <span className="text-slate-700">{item.productName} × {item.weight}kg</span>
                                     <span className="font-medium">{formatCurrency(item.totalPrice)}</span>
@@ -213,9 +195,9 @@ function OrderDetailModal({
                     {/* Shipping */}
                     <div className="bg-ocean-50 rounded-xl p-3 text-sm">
                         <p className="font-semibold mb-1">Giao hàng</p>
-                        <p>{order.shipping.name} — {order.shipping.phone}</p>
-                        <p className="text-slate-500">{order.shipping.address}, {order.shipping.district}, {order.shipping.province}</p>
-                        {order.shipping.note && <p className="text-slate-400 italic mt-1">"{order.shipping.note}"</p>}
+                        <p>{order.customerName} — {order.customerPhone}</p>
+                        <p className="text-slate-500">{order.shippingAddress?.address}, {order.shippingAddress?.district}, {order.shippingAddress?.province}</p>
+                        {order.note && <p className="text-slate-400 italic mt-1">"{order.note}"</p>}
                     </div>
 
                     {/* Change status */}

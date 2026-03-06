@@ -32,20 +32,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) return null;
 
-                const users = getUsers();
-                const user = users.find((u: { email: string; password: string; isActive: boolean }) => u.email === credentials.email);
+                try {
+                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: credentials.email,
+                            password: credentials.password,
+                        }),
+                    });
 
-                if (!user) return null;
-                if (user.password !== credentials.password) return null;
-                if (!user.isActive) return null;
+                    if (!res.ok) return null;
+                    const data = await res.json();
 
-                return {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    image: user.image,
-                    role: user.role,
-                };
+                    return {
+                        id: data.user.id,
+                        name: data.user.name,
+                        email: data.user.email,
+                        image: data.user.image,
+                        role: data.user.role,
+                        accessToken: data.accessToken,
+                    };
+                } catch (error) {
+                    console.error('Auth authorize error:', error);
+                    return null;
+                }
             },
         }),
     ],

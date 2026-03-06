@@ -20,6 +20,8 @@ const registerSchema = z.object({
 
 type RegisterForm = z.infer<typeof registerSchema>;
 
+import { authService } from '@/src/services/auth.service';
+
 export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -35,26 +37,16 @@ export default function RegisterPage() {
         setError('');
 
         try {
-            const res = await fetch('/api/users', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: data.name,
-                    email: data.email,
-                    phone: data.phone,
-                    password: data.password,
-                }),
+            await authService.register({
+                name: data.name,
+                email: data.email,
+                phone: data.phone,
+                password: data.password,
             });
 
-            if (!res.ok) {
-                const result = await res.json();
-                setError(result.message || 'Email này đã được sử dụng');
-                return;
-            }
-
             router.push('/auth/login?registered=true');
-        } catch {
-            setError('Có lỗi xảy ra, vui lòng thử lại');
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại');
         } finally {
             setIsLoading(false);
         }

@@ -60,6 +60,7 @@ export interface User {
 
 // ===================== CART =====================
 export interface CartItem {
+  id?: string; // cart item id from backend
   productId: string;
   productName: string;
   productImage: string;

@@ -4,10 +4,17 @@ import { X, ShoppingCart, Trash2, Plus, Minus, Package } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { formatCurrency, formatWeight } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function CartDrawer() {
-    const { items, isOpen, setOpen, removeItem, updateItemWeight, getTotal, clearCart } = useCartStore();
+    const { items, isOpen, setOpen, removeItem, updateItemWeight, getTotal, clearCart, fetchCart } = useCartStore();
+
+    useEffect(() => {
+        if (isOpen) {
+            fetchCart();
+        }
+    }, [isOpen, fetchCart]);
+
     const total = getTotal();
     const shippingFee = total >= 500000 ? 0 : 30000;
 

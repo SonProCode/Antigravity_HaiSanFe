@@ -4,20 +4,7 @@ import { useState } from 'react';
 import { Search, Edit, Trash2, User as UserIcon, Shield, ShieldAlert } from 'lucide-react';
 import type { User } from '@/types';
 
-async function fetchUsers(page = 1) {
-    const res = await fetch(`/api/users?page=${page}&pageSize=20`);
-    return res.json();
-}
-
-async function updateUser(id: string, data: Partial<User>) {
-    const res = await fetch(`/api/users/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error('Failed to update user');
-    return res.json();
-}
+import { userService } from '@/src/services/user.service';
 
 export default function AdminUsersPage() {
     const queryClient = useQueryClient();
@@ -27,11 +14,11 @@ export default function AdminUsersPage() {
 
     const { data, isLoading } = useQuery({
         queryKey: ['admin-users', page],
-        queryFn: () => fetchUsers(page),
+        queryFn: () => userService.getAll({ page, pageSize: 20 }),
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, data }: { id: string; data: Partial<User> }) => updateUser(id, data),
+        mutationFn: ({ id, data }: { id: string; data: Partial<User> }) => userService.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
             setEditingUser(null);

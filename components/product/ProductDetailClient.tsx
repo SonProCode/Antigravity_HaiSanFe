@@ -9,17 +9,12 @@ import type { Product } from '@/types';
 import { ProductCardSkeleton } from '@/components/product/ProductCard';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
-async function fetchProduct(slug: string) {
-    const res = await fetch(`/api/products/${slug}`);
-    if (!res.ok) throw new Error('Không tìm thấy sản phẩm');
-    return res.json();
-}
+import { productService } from '@/src/services/product.service';
 
 export default function ProductDetailClient({ slug }: { slug: string }) {
     const { data: product, isLoading, error } = useQuery({
         queryKey: ['product', slug],
-        queryFn: () => fetchProduct(slug),
+        queryFn: () => productService.getBySlug(slug),
     });
 
     const addItem = useCartStore((s) => s.addItem);

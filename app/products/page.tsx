@@ -7,19 +7,23 @@ import { Search, SlidersHorizontal } from 'lucide-react';
 import { cn, CATEGORY_LABELS, debounce } from '@/lib/utils';
 import type { Product } from '@/types';
 
+import { productService } from '@/src/services/product.service';
+
 const CATEGORIES = ['all', 'tom', 'ca', 'muc', 'cua', 'premium'] as const;
+const CATEGORY_MAP: Record<string, string> = {
+    'tom': 'TOM',
+    'ca': 'CA',
+    'muc': 'MUC',
+    'cua': 'CUA',
+    'premium': 'PREMIUM'
+};
+
 const SORT_OPTIONS = [
     { value: 'newest', label: 'Mới nhất' },
     { value: 'price_asc', label: 'Giá tăng dần' },
     { value: 'price_desc', label: 'Giá giảm dần' },
     { value: 'discount', label: 'Giảm giá nhiều nhất' },
 ];
-
-async function fetchProducts(params: URLSearchParams) {
-    const res = await fetch(`/api/products?${params.toString()}`);
-    if (!res.ok) throw new Error('Lỗi tải sản phẩm');
-    return res.json();
-}
 
 function ProductsContent() {
     const searchParams = useSearchParams();
@@ -50,17 +54,16 @@ function ProductsContent() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchInput]);
 
-    const queryParams = new URLSearchParams({
-        page: String(page),
-        pageSize: String(pageSize),
-        ...(category !== 'all' && { category }),
-        ...(sort && { sort }),
-        ...(searchParams.get('q') && { q: searchParams.get('q')! }),
-    });
-
     const { data, isLoading } = useQuery({
-        queryKey: ['products-list', queryParams.toString()],
-        queryFn: () => fetchProducts(queryParams),
+        queryKey: ['products-list', category, sort, page, searchParams.get('q')],
+        queryFn: () => productService.getAll({
+            page,
+            pageSize,
+            category: category !== 'all' ? CATEGORY_MAP[category] : undefined,
+            q: searchParams.get('q') || undefined,
+            sortBy: sort === 'price_asc' ? 'price' : sort === 'price_desc' ? 'price' : sort === 'discount' ? 'salePrice' : 'createdAt',
+            order: sort === 'price_asc' ? 'asc' : 'desc'
+        }),
     });
 
     const products: Product[] = data?.data || [];

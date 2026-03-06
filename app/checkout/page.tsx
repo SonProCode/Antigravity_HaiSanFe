@@ -31,7 +31,9 @@ const DISTRICTS: Record<string, string[]> = {
     'Hải Phòng': ['Quận Lê Chân', 'Quận Hải Châu', 'Quận Đồ Sơn', 'Quận Kiến An'],
 };
 
-export default function CheckoutPage() {
+import { orderService } from '@/src/services/order.service';
+
+function CheckoutPage() {
     const { items, getTotal, clearCart } = useCartStore();
     const { data: session } = useSession();
     const router = useRouter();
@@ -39,7 +41,7 @@ export default function CheckoutPage() {
     const [success, setSuccess] = useState<{ orderId: string } | null>(null);
 
     const total = getTotal();
-    const shippingFee = total >= 500000 ? 0 : 30000;
+    const shippingFee = total >= 1000000 ? 0 : 50000; // Match backend logic
     const grandTotal = total + shippingFee;
 
     const {
@@ -62,24 +64,26 @@ export default function CheckoutPage() {
         setIsSubmitting(true);
 
         try {
-            const res = await fetch('/api/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    items,
-                    shipping: data,
-                    paymentMethod: data.paymentMethod,
-                    userId: session?.user?.id,
-                }),
+            const result = await orderService.create({
+                customerName: data.name,
+                customerPhone: data.phone,
+                shippingAddress: {
+                    province: data.province,
+                    district: data.district,
+                    ward: data.ward,
+                    address: data.address,
+                },
+                paymentMethod: data.paymentMethod.toUpperCase(), // Backend expects uppercase enum
+                note: data.note,
+                sessionId: localStorage.getItem('sessionId'),
             });
 
-            const result = await res.json();
-            if (res.ok) {
-                clearCart();
+            if (result && result.orderId) {
+                await clearCart();
                 setSuccess({ orderId: result.orderId });
             }
         } catch (err) {
-            console.error(err);
+            console.error('Checkout error:', err);
         } finally {
             setIsSubmitting(false);
         }

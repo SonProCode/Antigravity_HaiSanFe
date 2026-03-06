@@ -27,7 +27,8 @@ export const authConfig = {
         async jwt({ token, user, account }) {
             if (user) {
                 token.id = user.id;
-                token.role = (user as { role?: string }).role || 'user';
+                token.role = (user as any).role || 'user';
+                token.accessToken = (user as any).accessToken;
             }
             if (account?.provider === 'google') {
                 token.role = 'user';
@@ -38,6 +39,7 @@ export const authConfig = {
             if (token) {
                 session.user.id = token.id as string;
                 session.user.role = token.role as string;
+                (session.user as any).accessToken = token.accessToken;
             }
             return session;
         },

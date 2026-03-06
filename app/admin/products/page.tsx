@@ -5,16 +5,7 @@ import { formatCurrency, formatNumber, CATEGORY_LABELS } from '@/lib/utils';
 import { Plus, Edit, Trash2, Search, Package, AlertTriangle } from 'lucide-react';
 import type { Product, Category } from '@/types';
 
-async function fetchProducts(page = 1) {
-    const res = await fetch(`/api/products?page=${page}&pageSize=20`);
-    return res.json();
-}
-
-async function deleteProduct(slug: string) {
-    const res = await fetch(`/api/products/${slug}`, { method: 'DELETE' });
-    if (!res.ok) throw new Error('Failed to delete');
-    return res.json();
-}
+import { adminService } from '@/src/services/admin.service';
 
 export default function AdminProductsPage() {
     const queryClient = useQueryClient();
@@ -26,19 +17,18 @@ export default function AdminProductsPage() {
 
     const { data, isLoading } = useQuery({
         queryKey: ['admin-products', page, search],
-        queryFn: () => fetchProducts(page),
+        queryFn: () => adminService.getProducts({ page, name: search, pageSize: 20 }),
     });
 
     const deleteMutation = useMutation({
-        mutationFn: deleteProduct,
+        mutationFn: (id: string) => adminService.deleteProduct(id),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-products'] }),
     });
 
     const products: Product[] = data?.data || [];
     const filtered = products.filter((p) => {
-        const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
         const matchStock = !showLowStock || p.inventoryKg < 5;
-        return matchSearch && matchStock;
+        return matchStock;
     });
 
     return (
@@ -143,7 +133,7 @@ export default function AdminProductsPage() {
                                                 </button>
                                                 <button
                                                     onClick={() => {
-                                                        if (confirm(`Xóa "${p.name}"?`)) deleteMutation.mutate(p.slug);
+                                                        if (confirm(`Xóa "${p.name}"?`)) deleteMutation.mutate(p.id);
                                                     }}
                                                     className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                                                 >
@@ -211,17 +201,21 @@ function ProductModal({ product, onClose, onSuccess }: { product?: Product; onCl
     async function handleSave() {
         setSaving(true);
         try {
-            const url = product ? `/api/products/${product.slug}` : '/api/products';
-            const method = product ? 'PUT' : 'POST';
             const body = {
                 ...form,
                 salePrice: form.salePrice ? Number(form.salePrice) : null,
                 price: Number(form.price),
                 inventoryKg: Number(form.inventoryKg),
-                percentOff: form.salePrice ? Math.round(((Number(form.price) - Number(form.salePrice)) / Number(form.price)) * 100) : null,
             };
-            await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+
+            if (product) {
+                await adminService.updateProduct(product.id, body);
+            } else {
+                await adminService.createProduct(body);
+            }
             onSuccess();
+        } catch (err) {
+            console.error('Save product error:', err);
         } finally {
             setSaving(false);
         }

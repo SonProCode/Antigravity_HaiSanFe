@@ -2,7 +2,7 @@
 import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Search, Package, CheckCircle, Truck, Box, XCircle, Clock } from 'lucide-react';
-import { ORDER_STATUS_LABELS } from '@/lib/utils';
+import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from '@/lib/utils';
 import type { Order, OrderStatus } from '@/types';
 
 function getStatusIcon(status: OrderStatus) {
@@ -17,16 +17,10 @@ function getStatusIcon(status: OrderStatus) {
     return icons[status];
 }
 
-const STATUS_COLORS: Record<OrderStatus, string> = {
-    pending: 'bg-yellow-100 text-yellow-600',
-    confirmed: 'bg-blue-100 text-blue-600',
-    packed: 'bg-purple-100 text-purple-600',
-    shipped: 'bg-orange-100 text-orange-600',
-    delivered: 'bg-green-100 text-green-600',
-    cancelled: 'bg-red-100 text-red-600',
-};
 
 const STATUS_ORDER: OrderStatus[] = ['pending', 'confirmed', 'packed', 'shipped', 'delivered'];
+
+import { orderService } from '@/src/services/order.service';
 
 function OrderTrackingContent() {
     const searchParams = useSearchParams();
@@ -34,8 +28,8 @@ function OrderTrackingContent() {
 
     const [query, setQuery] = useState(initialOrderId);
     const [queryType, setQueryType] = useState<'orderId' | 'phone'>('orderId');
-    const [order, setOrder] = useState<Order | null>(null);
-    const [orders, setOrders] = useState<Order[]>([]);
+    const [order, setOrder] = useState<any | null>(null);
+    const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [searched, setSearched] = useState(false);
@@ -51,25 +45,21 @@ function OrderTrackingContent() {
         setSearched(true);
 
         try {
-            const url = queryType === 'orderId'
-                ? `/api/orders?orderId=${encodeURIComponent(query)}`
-                : `/api/orders?phone=${encodeURIComponent(query)}`;
-
-            const res = await fetch(url);
-            const data = await res.json();
-
-            if (!res.ok) {
-                setError('Không tìm thấy đơn hàng');
+            if (queryType === 'phone') {
+                // Backend doesn't have a direct "find orders by phone" for guests yet
+                // But we can implement it or just focus on orderCode as requested
+                setError('Hiện tại hệ thống chỉ hỗ trợ tra cứu qua Mã đơn hàng');
                 return;
             }
 
-            if (queryType === 'phone') {
-                setOrders(data.data || []);
+            const result = await orderService.track(query);
+            if (result) {
+                setOrder(result);
             } else {
-                setOrder(data);
+                setError('Không tìm thấy đơn hàng');
             }
-        } catch {
-            setError('Có lỗi xảy ra, vui lòng thử lại');
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Không tìm thấy đơn hàng');
         } finally {
             setLoading(false);
         }
@@ -94,8 +84,8 @@ function OrderTrackingContent() {
                             key={opt.value}
                             onClick={() => setQueryType(opt.value as 'orderId' | 'phone')}
                             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${queryType === opt.value
-                                    ? 'bg-ocean-500 text-white'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                ? 'bg-ocean-500 text-white'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                 }`}
                         >
                             {opt.label}
@@ -157,8 +147,8 @@ function OrderTrackingContent() {
                                     <p className="font-bold text-ocean-600">{o.orderId}</p>
                                     <p className="text-sm text-slate-500">{new Date(o.createdAt).toLocaleDateString('vi-VN')}</p>
                                 </div>
-                                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${STATUS_COLORS[o.status]}`}>
-                                    {ORDER_STATUS_LABELS[o.status]}
+                                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${ORDER_STATUS_COLORS[o.status as OrderStatus]}`}>
+                                    {ORDER_STATUS_LABELS[o.status as OrderStatus]}
                                 </span>
                             </div>
                         </button>
@@ -181,7 +171,7 @@ function OrderDetail({ order }: { order: Order }) {
                     <p className="text-sm text-slate-500">Mã đơn hàng</p>
                     <p className="text-xl font-bold text-ocean-600">{order.orderId}</p>
                 </div>
-                <span className={`px-3 py-1.5 text-sm font-semibold rounded-full ${STATUS_COLORS[order.status]}`}>
+                <span className={`px-3 py-1.5 text-sm font-semibold rounded-full ${ORDER_STATUS_COLORS[order.status]}`}>
                     {ORDER_STATUS_LABELS[order.status]}
                 </span>
             </div>
@@ -192,7 +182,7 @@ function OrderDetail({ order }: { order: Order }) {
                     <div className="flex items-center gap-1 mb-4">
                         {STATUS_ORDER.map((s, i) => (
                             <div key={s} className="flex items-center flex-1">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${i <= currentIndex ? STATUS_COLORS[s] : 'bg-slate-100 text-slate-400'
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${i <= currentIndex ? ORDER_STATUS_COLORS[s] : 'bg-slate-100 text-slate-400'
                                     }`}>
                                     {getStatusIcon(s)}
                                 </div>

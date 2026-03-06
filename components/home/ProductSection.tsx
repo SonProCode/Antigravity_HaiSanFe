@@ -4,24 +4,19 @@ import ProductCard, { ProductCardSkeleton } from '@/components/product/ProductCa
 import Link from 'next/link';
 import type { Product } from '@/types';
 
+import { productService } from '@/src/services/product.service';
+
 interface ProductSectionProps {
     title: string;
     subtitle?: string;
-    queryParams: Record<string, string>;
+    queryParams: any;
     viewAllHref?: string;
-}
-
-async function fetchProducts(params: Record<string, string>) {
-    const qs = new URLSearchParams(params).toString();
-    const res = await fetch(`/api/products?${qs}`);
-    if (!res.ok) throw new Error('Failed to fetch products');
-    return res.json();
 }
 
 export default function ProductSection({ title, subtitle, queryParams, viewAllHref }: ProductSectionProps) {
     const { data, isLoading } = useQuery({
         queryKey: ['products', queryParams],
-        queryFn: () => fetchProducts(queryParams),
+        queryFn: () => productService.getAll(queryParams),
     });
 
     const products: Product[] = data?.data || [];

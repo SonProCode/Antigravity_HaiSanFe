@@ -45,7 +45,7 @@ function LoginContent() {
             }
 
             // Admin redirect
-            if (data.email === 'admin@haisanquangninh.vn') {
+            if (data.email === 'admin@haisan.vn') {
                 router.push('/admin');
             } else {
                 router.push(callbackUrl);
