@@ -56,6 +56,7 @@ export const useCartStore = create<CartState>()(
                         return;
                     } catch (error) {
                         console.error('Failed to add to cart on server:', error);
+                        throw error;
                     } finally {
                         set({ isSyncing: false });
                     }

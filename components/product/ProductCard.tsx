@@ -6,6 +6,7 @@ import { cn, formatCurrency, formatNumber } from '@/lib/utils';
 import type { Product } from '@/types';
 import { useCartStore } from '@/store/cart';
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 interface ProductCardProps {
     product: Product;
@@ -23,16 +24,22 @@ export default function ProductCard({ product, className }: ProductCardProps) {
         e.preventDefault();
         e.stopPropagation();
         setAdding(true);
-        addItem({
-            productId: product.id,
-            productName: product.name,
-            productImage: product.images[0],
-            slug: product.slug,
-            weight: 1,
-            pricePerKg: displayPrice,
-            totalPrice: displayPrice,
-        });
-        setTimeout(() => setAdding(false), 600);
+        try {
+            await addItem({
+                productId: product.id,
+                productName: product.name,
+                productImage: product.images[0],
+                slug: product.slug,
+                weight: 1,
+                pricePerKg: displayPrice,
+                totalPrice: displayPrice,
+            });
+            toast.success(`Đã thêm ${product.name} vào giỏ hàng`);
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || 'Không thể thêm vào giỏ hàng');
+        } finally {
+            setAdding(false);
+        }
     }
 
     return (
