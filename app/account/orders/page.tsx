@@ -63,7 +63,7 @@ export default function UserOrdersPage() {
                                     </div>
                                 </div>
                                 <Link
-                                    href={`/order/track?orderId=${order.orderId}`}
+                                    href={`/account/orders/${order.orderId}`}
                                     className="flex items-center gap-1 text-sm font-semibold text-slate-400 group-hover:text-ocean-600 transition-colors"
                                 >
                                     Chi tiết <ChevronRight className="w-4 h-4" />
