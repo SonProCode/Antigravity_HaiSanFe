@@ -17,6 +17,7 @@ const mapOrder = (o: any): Order => ({
         name: o.customerName,
         phone: o.customerPhone,
         ...(typeof o.shippingAddress === 'string' ? JSON.parse(o.shippingAddress) : o.shippingAddress),
+        note: o.note,
     },
     paymentMethod: o.paymentMethod?.toLowerCase() || 'cod',
     subtotal: Number(o.subtotal),

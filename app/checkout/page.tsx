@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
 import Image from 'next/image';
@@ -58,6 +58,12 @@ function CheckoutPage() {
     });
 
     const selectedProvince = watch('province');
+
+    useEffect(() => {
+        if (!success && items.length === 0) {
+            router.push('/cart');
+        }
+    }, [items.length, success, router]);
 
     async function onSubmit(data: CheckoutForm) {
         if (items.length === 0) return;
@@ -140,8 +146,7 @@ function CheckoutPage() {
         );
     }
 
-    if (items.length === 0) {
-        router.push('/cart');
+    if (!success && items.length === 0) {
         return null;
     }
 
