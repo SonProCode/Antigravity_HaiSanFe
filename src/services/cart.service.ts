@@ -14,7 +14,7 @@ export const mapCartItem = (item: any): CartItem => ({
 
 export const cartService = {
     async getCart() {
-        const response = await apiClient.get('/carts');
+        const response = await apiClient.get('/cart');
         const cart = response.data;
         if (cart && cart.items) {
             cart.items = cart.items.map(mapCartItem);
@@ -23,7 +23,7 @@ export const cartService = {
     },
 
     async addToCart(productId: string, weightKg: number) {
-        const response = await apiClient.post('/carts', { productId, weightKg });
+        const response = await apiClient.post('/cart/items', { productId, weightKg });
         const cart = response.data;
         if (cart && cart.items) {
             cart.items = cart.items.map(mapCartItem);
@@ -32,7 +32,7 @@ export const cartService = {
     },
 
     async updateItem(itemId: string, weightKg: number) {
-        const response = await apiClient.patch(`/carts/${itemId}`, { weightKg });
+        const response = await apiClient.patch(`/cart/items/${itemId}`, { weightKg });
         const cart = response.data;
         if (cart && cart.items) {
             cart.items = cart.items.map(mapCartItem);
@@ -41,12 +41,12 @@ export const cartService = {
     },
 
     async removeItem(itemId: string) {
-        const response = await apiClient.delete(`/carts/${itemId}`);
+        const response = await apiClient.delete(`/cart/items/${itemId}`);
         return response.data;
     },
 
     async clearCart() {
-        const response = await apiClient.delete('/carts');
+        const response = await apiClient.delete('/cart');
         return response.data;
     }
 };
