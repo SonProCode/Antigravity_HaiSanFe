@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { orderService } from '@/src/services/order.service';
 import { Package, Clock, ChevronRight } from 'lucide-react';
 import { formatCurrency, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from '@/lib/utils';
@@ -61,9 +62,12 @@ export default function UserOrdersPage() {
                                         <p className="text-lg font-bold text-ocean-600">{formatCurrency(order.total)}</p>
                                     </div>
                                 </div>
-                                <button className="flex items-center gap-1 text-sm font-semibold text-slate-400 group-hover:text-ocean-600 transition-colors">
+                                <Link
+                                    href={`/order/track?orderId=${order.orderId}`}
+                                    className="flex items-center gap-1 text-sm font-semibold text-slate-400 group-hover:text-ocean-600 transition-colors"
+                                >
                                     Chi tiết <ChevronRight className="w-4 h-4" />
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     ))
