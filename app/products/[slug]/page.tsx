@@ -13,13 +13,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     try {
         const product = await productService.getBySlug(slug);
         if (!product) return { title: 'Sản phẩm' };
+        const ogImages = product.images?.[0] ? [{ url: product.images[0] }] : [];
         return {
             title: product.name,
             description: product.shortDescription,
             openGraph: {
                 title: product.name,
                 description: product.shortDescription,
-                images: [{ url: product.images?.[0] }],
+                images: ogImages,
             },
         };
     } catch {
