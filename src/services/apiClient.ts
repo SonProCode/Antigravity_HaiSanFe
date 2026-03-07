@@ -35,8 +35,17 @@ apiClient.interceptors.response.use(
 
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
-            // Logical for Refresh Token would go here if implemented in frontend state
-            // For now, just clear and redirect if unauthorized on sensitive routes
+
+            // Only redirect if we are in the browser
+            if (typeof window !== 'undefined') {
+                // Remove local tokens just in case
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                // Dynamically import signOut to avoid SSR/Server Component issues in apiClient
+                import('next-auth/react').then(({ signOut }) => {
+                    signOut({ callbackUrl: '/auth/login?expired=true' });
+                });
+            }
         }
 
         return Promise.reject(error);

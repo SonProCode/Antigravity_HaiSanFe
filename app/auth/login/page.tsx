@@ -23,6 +23,7 @@ function LoginContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl') || '/';
+    const isExpired = searchParams.get('expired') === 'true';
 
     const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
         resolver: zodResolver(loginSchema),
@@ -83,6 +84,11 @@ function LoginContent() {
                     <p className="text-slate-500 text-sm mb-6">Chào mừng bạn quay lại!</p>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        {isExpired && !error && (
+                            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-700 text-sm">
+                                Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục.
+                            </div>
+                        )}
                         {error && (
                             <div className="bg-red-50 border border-red-100 rounded-xl p-3 text-red-600 text-sm">
                                 {error}

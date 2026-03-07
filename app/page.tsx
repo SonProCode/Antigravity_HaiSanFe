@@ -1,6 +1,6 @@
 import HeroSlider from '@/components/home/HeroSlider';
 import ProductSection from '@/components/home/ProductSection';
-import CategorySection from '@/components/home/CategorySection';
+import MarqueeProductSection from '@/components/home/MarqueeProductSection';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -12,11 +12,10 @@ export default function HomePage() {
   return (
     <>
       <HeroSlider />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <CategorySection />
-        <ProductSection
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <MarqueeProductSection
           title="Sản phẩm Hot 🔥"
-          subtitle="Những sản phẩm yêu thích nhất tháng này"
+          subtitle="Những sản phẩm yêu thích nhất tháng này, chỉ có tại Hải Sản Quảng Ninh"
           queryParams={{ featured: 'true', pageSize: '10' }}
           viewAllHref="/products"
         />

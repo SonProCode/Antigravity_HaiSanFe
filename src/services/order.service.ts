@@ -39,8 +39,10 @@ export const orderService = {
         return response.data.map(mapOrder);
     },
 
-    async track(orderCode: string): Promise<Order> {
-        const response = await apiClient.get(`/orders/track/${orderCode}`);
+    async track(orderCode: string, phone: string): Promise<Order> {
+        const response = await apiClient.get(`/orders/track/${orderCode}`, {
+            params: { phone }
+        });
         return mapOrder(response.data);
     },
 

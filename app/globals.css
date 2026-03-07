@@ -174,3 +174,30 @@ body {
 .prose-haisan p {
   margin-bottom: 1rem;
 }
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+.marquee-container::-webkit-scrollbar {
+  display: none;
+}
+
+.marquee-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

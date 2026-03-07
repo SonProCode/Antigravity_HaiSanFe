@@ -124,7 +124,7 @@ export default function HeroSlider() {
             </button>
 
             {/* Dots */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-2">
                 {SLIDES.map((_, i) => (
                     <button
                         key={i}
@@ -136,7 +136,7 @@ export default function HeroSlider() {
             </div>
 
             {/* Free shipping banner */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-teal-600 to-ocean-600 py-2 px-4">
+            <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-r from-teal-600 to-ocean-600 py-2 px-4 shadow-lg">
                 <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-6 text-white text-xs font-medium">
                     <span>🚚 Miễn phí ship đơn ≥500K</span>
                     <span>❄️ Giao hàng lạnh đảm bảo tươi</span>
