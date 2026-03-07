@@ -44,9 +44,9 @@ export default function MarqueeProductSection({ title, subtitle, queryParams, vi
             </div>
 
             {/* Marquee Container */}
-            <div className="relative w-full overflow-hidden rounded-2xl">
+            <div className="relative w-full overflow-hidden rounded-2xl pb-4 pt-2">
                 {isLoading ? (
-                    <div className="flex gap-4 min-w-max">
+                    <div className="flex gap-4 shrink-0">
                         {Array.from({ length: 6 }).map((_, i) => (
                             <div key={i} className="w-[200px] sm:w-[240px] shrink-0">
                                 <ProductCardSkeleton />
@@ -54,9 +54,9 @@ export default function MarqueeProductSection({ title, subtitle, queryParams, vi
                         ))}
                     </div>
                 ) : products.length > 0 ? (
-                    <div className="flex w-max hover:[animation-play-state:paused] pb-4 pt-2" style={{ animation: 'marquee 35s linear infinite' }}>
+                    <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
                         {/* First set */}
-                        <div className="flex gap-4 pr-4">
+                        <div className="flex shrink-0 gap-4 pr-4">
                             {list.map((p, index) => (
                                 <div key={`set1-${p.id}-${index}`} className="w-[200px] sm:w-[240px] shrink-0">
                                     <ProductCard product={p} />
@@ -64,7 +64,7 @@ export default function MarqueeProductSection({ title, subtitle, queryParams, vi
                             ))}
                         </div>
                         {/* Second set (perfect clone for seamless loop) */}
-                        <div className="flex gap-4 pr-4">
+                        <div className="flex shrink-0 gap-4 pr-4" aria-hidden="true">
                             {list.map((p, index) => (
                                 <div key={`set2-${p.id}-${index}`} className="w-[200px] sm:w-[240px] shrink-0">
                                     <ProductCard product={p} />
