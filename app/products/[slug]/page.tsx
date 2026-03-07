@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import ProductDetailClient from '@/components/product/ProductDetailClient';
+import { productService } from '@/src/services/product.service';
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -10,10 +11,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const slug = resolvedParams.slug;
 
     try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-        const res = await fetch(`${apiUrl}/products/${slug}`);
-        if (!res.ok) return { title: 'Sản phẩm' };
-        const product = await res.json();
+        const product = await productService.getBySlug(slug);
+        if (!product) return { title: 'Sản phẩm' };
         return {
             title: product.name,
             description: product.shortDescription,
