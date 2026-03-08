@@ -10,7 +10,7 @@ export const authConfig = {
             const isLoggedIn = !!auth?.user;
             const role = auth?.user?.role;
             const isAdminPath = nextUrl.pathname.startsWith('/admin');
-            const isProtectedPath = nextUrl.pathname.startsWith('/checkout') || nextUrl.pathname.startsWith('/account');
+            const isProtectedPath = nextUrl.pathname.startsWith('/account');
 
             if (isAdminPath) {
                 if (isLoggedIn && role?.toLowerCase() === 'admin') return true;

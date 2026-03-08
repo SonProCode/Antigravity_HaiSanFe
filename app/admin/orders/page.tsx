@@ -85,7 +85,14 @@ export default function AdminOrdersPage() {
                                             <p className="text-xs text-slate-400">{o.items?.length || 0} sản phẩm</p>
                                         </td>
                                         <td className="px-4 py-3">
-                                            <p className="text-sm font-medium text-slate-800">{o.customerName}</p>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <p className="text-sm font-medium text-slate-800">{o.customerName}</p>
+                                                {o.userId ? (
+                                                    <span className="px-2 py-0.5 bg-green-50 text-green-600 text-[10px] font-bold rounded-md">Thành viên</span>
+                                                ) : (
+                                                    <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-md">Khách</span>
+                                                )}
+                                            </div>
                                             <p className="text-xs text-slate-500">{o.customerPhone}</p>
                                         </td>
                                         <td className="px-4 py-3">
@@ -199,7 +206,14 @@ function OrderDetailModal({
                             Thông tin nhận hàng
                         </p>
                         <div className="space-y-1 text-slate-700">
-                            <p className="font-semibold">{order.shipping?.name} — {order.shipping?.phone}</p>
+                            <div className="flex items-center gap-2">
+                                <p className="font-semibold">{order.shipping?.name} — {order.shipping?.phone}</p>
+                                {order.userId ? (
+                                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded border border-green-200">Thành viên</span>
+                                ) : (
+                                    <span className="px-2 py-0.5 bg-white text-slate-500 text-[10px] font-bold rounded border border-slate-200">Khách vãng lai</span>
+                                )}
+                            </div>
                             <p>{order.shipping?.address}</p>
                             <p>{order.shipping?.ward}, {order.shipping?.district}, {order.shipping?.province}</p>
                             {order.shipping?.note && (
