@@ -16,13 +16,13 @@ export default function HomePage() {
         <MarqueeProductSection
           title="Sản phẩm Hot 🔥"
           subtitle="Những sản phẩm yêu thích nhất tháng này, chỉ có tại Hải Sản Quảng Ninh"
-          queryParams={{ featured: 'true', pageSize: '10' }}
+          queryParams={{ isBestSeller: 'true', pageSize: '10' }}
           viewAllHref="/products"
         />
         <ProductSection
           title="Bán chạy nhất ⭐"
           subtitle="Được khách hàng tin chọn nhiều nhất"
-          queryParams={{ bestSeller: 'true', pageSize: '10' }}
+          queryParams={{ isBestSeller: 'true', pageSize: '10' }}
           viewAllHref="/products?sort=discount"
         />
       </div>

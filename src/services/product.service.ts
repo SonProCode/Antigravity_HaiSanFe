@@ -8,6 +8,7 @@ export interface ProductQuery {
     q?: string;
     sortBy?: string;
     order?: 'asc' | 'desc';
+    isBestSeller?: string | boolean;
 }
 
 const mapProduct = (p: any): Product => ({
