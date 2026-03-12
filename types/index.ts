@@ -23,7 +23,8 @@ export interface Product {
   specification: string;
   rating: number;
   reviewCount: number;
-  relatedProducts?: string[]; // product ids
+  relatedProducts?: any[]; // full objects when populated
+  reviews?: any[]; // full objects when populated
   createdAt: string;
 }
 

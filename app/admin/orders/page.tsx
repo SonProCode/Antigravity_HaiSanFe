@@ -13,11 +13,12 @@ export default function AdminOrdersPage() {
     const queryClient = useQueryClient();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
+    const [userType, setUserType] = useState<'' | 'guest' | 'member'>('');
     const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
 
     const { data, isLoading } = useQuery({
-        queryKey: ['admin-orders', page, search],
-        queryFn: () => adminService.getOrders({ page, orderCode: search, pageSize: 15 }),
+        queryKey: ['admin-orders', page, search, userType],
+        queryFn: () => adminService.getOrders({ page, orderCode: search, userType: userType || undefined, pageSize: 15 }),
     });
 
     const updateMutation = useMutation({
@@ -41,17 +42,28 @@ export default function AdminOrdersPage() {
                 </div>
             </div>
 
-            {/* Search */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-                <div className="relative">
+            {/* Filters & Search */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex flex-wrap gap-4 items-center">
+                <div className="relative flex-1 min-w-[200px]">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Tìm theo mã đơn..."
+                        placeholder="Tìm theo mã đơn hoặc SĐT..."
                         className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-ocean-400"
                     />
+                </div>
+                <div className="w-full sm:w-auto">
+                    <select
+                        value={userType}
+                        onChange={(e) => setUserType(e.target.value as any)}
+                        className="w-full sm:w-48 px-4 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-ocean-400 bg-white"
+                    >
+                        <option value="">Tất cả khách hàng</option>
+                        <option value="member">Thành viên</option>
+                        <option value="guest">Khách vãng lai</option>
+                    </select>
                 </div>
             </div>
 

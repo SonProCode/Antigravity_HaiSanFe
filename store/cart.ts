@@ -150,7 +150,8 @@ export const useCartStore = create<CartState>()(
 
             clearCart: async () => {
                 const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-                if (token) {
+                const sessionId = typeof window !== 'undefined' ? localStorage.getItem('sessionId') : null;
+                if (token || sessionId) {
                     try {
                         await cartService.clearCart();
                     } catch (error) {

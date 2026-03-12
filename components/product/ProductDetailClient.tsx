@@ -47,6 +47,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
     }
 
     function handleAddToCart() {
+        if (!product) return;
         if (weight <= 0 || weight > maxWeight) return;
         setAdding(true);
         addItem({
@@ -280,11 +281,11 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                     </div>
 
                     {/* Upsell */}
-                    {product.relatedProducts?.length > 0 && (
+                    {(product.relatedProducts?.length ?? 0) > 0 && (
                         <div className="border border-ocean-100 rounded-xl p-4">
                             <h3 className="font-bold text-slate-800 mb-3">THƯỜNG ĐƯỢC MUA CÙNG</h3>
                             <div className="grid grid-cols-2 gap-2">
-                                {product.relatedProducts.slice(0, 6).map((p: Product & { salePrice?: number; images: string[] }) => (
+                                {product.relatedProducts!.slice(0, 6).map((p: any) => (
                                     <label key={p.id} className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-ocean-50 transition-colors">
                                         <button
                                             onClick={() => setAddedUpsell((prev) => ({ ...prev, [p.id]: !prev[p.id] }))}
@@ -310,7 +311,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                                         {formatCurrency(Object.entries(addedUpsell)
                                             .filter(([, v]) => v)
                                             .reduce((sum, [id]) => {
-                                                const p = product.relatedProducts.find((p: { id: string }) => p.id === id) as { salePrice?: number; price: number };
+                                                const p = product.relatedProducts?.find((p: { id: string }) => p.id === id) as { salePrice?: number; price: number };
                                                 return sum + (p?.salePrice || p?.price || 0) * 0.5;
                                             }, 0))}
                                     </strong>
@@ -328,13 +329,13 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
             </div>
 
             {/* Reviews section */}
-            {product.reviews?.length > 0 && (
+            {(product.reviews?.length ?? 0) > 0 && (
                 <div className="mt-12 border-t border-ocean-100 pt-8">
                     <h2 className="text-xl font-bold text-slate-800 mb-6">
-                        Đánh giá sản phẩm ({product.reviews.length})
+                        Đánh giá sản phẩm ({product.reviews!.length})
                     </h2>
                     <div className="grid gap-4 sm:grid-cols-2">
-                        {product.reviews.slice(0, 6).map((review: { id: string; userName: string; rating: number; comment: string; createdAt: string }) => (
+                        {product.reviews!.slice(0, 6).map((review: { id: string; userName: string; rating: number; comment: string; createdAt: string }) => (
                             <div key={review.id} className="bg-ocean-50 rounded-xl p-4">
                                 <div className="flex items-center gap-2 mb-2">
                                     <div className="w-8 h-8 rounded-full bg-ocean-200 flex items-center justify-center text-ocean-700 font-bold text-sm">
