@@ -78,7 +78,7 @@ function CheckoutPage() {
                     ward: data.ward,
                     address: data.address,
                 },
-                paymentMethod: data.paymentMethod.toUpperCase(), // Backend expects uppercase enum
+                paymentMethod: data.paymentMethod === 'transfer' ? 'BANK_TRANSFER' : 'COD',
                 note: data.note,
                 sessionId: localStorage.getItem('sessionId'),
             });
