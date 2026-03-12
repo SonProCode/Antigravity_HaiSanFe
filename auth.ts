@@ -32,8 +32,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) return null;
 
+                const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+                const apiUrl = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl.replace(/\/$/, '')}/api`;
+
                 try {
-                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+                    const res = await fetch(`${apiUrl}/auth/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
