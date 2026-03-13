@@ -224,12 +224,20 @@ function ProductModal({ product, onClose, onSuccess }: { product?: Product; onCl
         if (!form.name || !form.category) return;
         setSaving(true);
         try {
+            // Correct mapping for Standard vs Sale price
+            const isSale = form.salePrice && Number(form.salePrice) > 0;
+            const currentPrice = isSale ? Number(form.salePrice) : Number(form.price);
+            const originalPrice = isSale ? Number(form.price) : null;
+
             const body = {
-                ...form,
-                description: form.shortDescription, // Backend expects description
-                salePrice: form.salePrice ? Number(form.salePrice) : null,
-                price: Number(form.price),
+                name: form.name,
+                category: form.category.toUpperCase(), // Enum is uppercase CA, TOM, etc.
+                price: currentPrice,
+                originalPrice: originalPrice,
                 inventoryKg: Number(form.inventoryKg),
+                description: form.shortDescription,
+                images: form.images,
+                // Do not send origin, preservation, etc. as they are not in the DTO
             };
 
             if (product) {
@@ -240,6 +248,7 @@ function ProductModal({ product, onClose, onSuccess }: { product?: Product; onCl
             onSuccess();
         } catch (err) {
             console.error('Save product error:', err);
+            // Alert user about the error if needed
         } finally {
             setSaving(false);
         }
