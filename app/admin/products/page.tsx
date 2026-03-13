@@ -189,8 +189,8 @@ function ProductModal({ product, onClose, onSuccess }: { product?: Product; onCl
     const [form, setForm] = useState({
         name: product?.name || '',
         category: product?.category || 'tom',
-        price: product?.price || 0,
-        salePrice: product?.salePrice || '',
+        price: product?.originalPrice || product?.price || 0, // Base price (original)
+        salePrice: product?.originalPrice ? product?.price : '', // Discounted price
         inventoryKg: product?.inventoryKg || 0,
         shortDescription: product?.description || '', // Match backend field
         origin: product?.origin || 'Quảng Ninh',
@@ -224,20 +224,24 @@ function ProductModal({ product, onClose, onSuccess }: { product?: Product; onCl
         if (!form.name || !form.category) return;
         setSaving(true);
         try {
-            // Correct mapping for Standard vs Sale price
-            const isSale = form.salePrice && Number(form.salePrice) > 0;
-            const currentPrice = isSale ? Number(form.salePrice) : Number(form.price);
-            const originalPrice = isSale ? Number(form.price) : null;
+            // Mapping for Backend:
+            // - Backend 'price' is always the ACTIVE price (what customer pays).
+            // - Backend 'originalPrice' is the STRIKE-THROUGH price (optional).
+            const basePrice = Number(form.price);
+            const salePrice = form.salePrice ? Number(form.salePrice) : null;
+
+            const isDiscounted = salePrice !== null && salePrice > 0;
+            const finalActivePrice = isDiscounted ? salePrice : basePrice;
+            const finalOriginalPrice = isDiscounted ? basePrice : null;
 
             const body = {
                 name: form.name,
-                category: form.category.toUpperCase(), // Enum is uppercase CA, TOM, etc.
-                price: currentPrice,
-                originalPrice: originalPrice,
+                category: form.category.toUpperCase(),
+                price: finalActivePrice,
+                originalPrice: finalOriginalPrice,
                 inventoryKg: Number(form.inventoryKg),
                 description: form.shortDescription,
                 images: form.images,
-                // Do not send origin, preservation, etc. as they are not in the DTO
             };
 
             if (product) {
@@ -294,7 +298,7 @@ function ProductModal({ product, onClose, onSuccess }: { product?: Product; onCl
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Giá gốc (đ/kg)</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Giá niêm yết (đ/kg)</label>
                             <input
                                 type="number"
                                 value={form.price}

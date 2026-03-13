@@ -10,8 +10,9 @@ export interface Product {
   shortDescription: string;
   images: string[];
   videoUrl?: string | null;
-  price: number; // pricePerKg in VND
-  salePrice?: number | null;
+  price: number; // current active price in VND
+  originalPrice?: number | null; // strike-through price in VND
+  salePrice?: number | null; // discounted price in VND (redundant but kept for UI compatibility)
   percentOff?: number | null;
   inventoryKg: number;
   soldCount: number;

@@ -21,8 +21,8 @@ const mapProduct = (p: any): Product => ({
     shortDescription: p.description?.substring(0, 100) || '',
     images: p.images?.map((img: any) => img.url) || [],
     price: Number(p.price),
-    salePrice: p.originalPrice ? Number(p.price) : null,
-    percentOff: p.percentOff,
+    originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
+    salePrice: p.originalPrice ? Number(p.price) : null, // keep this for UI components that use 'salePrice'
     inventoryKg: Number(p.inventoryKg),
     soldCount: p.soldCount || 0,
     bestSeller: p.isBestSeller || false,
