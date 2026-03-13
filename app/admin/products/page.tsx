@@ -112,9 +112,9 @@ export default function AdminProductsPage() {
                                             </span>
                                         </td>
                                         <td className="px-4 py-3">
-                                            <p className="text-sm font-semibold text-slate-800">{formatCurrency(p.salePrice || p.price)}</p>
-                                            {p.salePrice && (
-                                                <p className="text-xs text-slate-400 line-through">{formatCurrency(p.price)}</p>
+                                            <p className="text-sm font-semibold text-slate-800">{formatCurrency(p.price)}</p>
+                                            {p.originalPrice && (
+                                                <p className="text-xs text-slate-400 line-through">{formatCurrency(p.originalPrice)}</p>
                                             )}
                                         </td>
                                         <td className="px-4 py-3">

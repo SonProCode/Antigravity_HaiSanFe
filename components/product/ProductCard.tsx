@@ -20,8 +20,8 @@ export default function ProductCard({ product, className }: ProductCardProps) {
     const [imgError, setImgError] = useState(false);
     const fallbackImage = 'https://images.unsplash.com/photo-1551462147-37885acc3c41?q=80&w=800'; // Reliable seafood placeholder
 
-    const displayPrice = product.salePrice || product.price;
-    const hasDiscount = !!product.salePrice && product.salePrice < product.price;
+    const displayPrice = product.price;
+    const hasDiscount = !!product.originalPrice;
 
     async function handleAddToCart(e: React.MouseEvent) {
         e.preventDefault();
@@ -127,7 +127,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
                 {hasDiscount && (
                     <div className="flex items-center gap-2 mb-2">
                         <span className="text-slate-400 text-xs line-through">
-                            {formatCurrency(product.price)}
+                            {formatCurrency(product.originalPrice || 0)}
                         </span>
                     </div>
                 )}

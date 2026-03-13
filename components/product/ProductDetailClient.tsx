@@ -37,7 +37,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
         </div>
     );
 
-    const displayPrice = product.salePrice || product.price;
+    const displayPrice = product.price;
     const totalPrice = Math.round(displayPrice * weight * 100) / 100;
     const maxWeight = product.inventoryKg;
 
@@ -190,8 +190,8 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                         <div className="flex items-baseline gap-3">
                             <span className="text-3xl font-bold text-ocean-600">{formatCurrency(displayPrice)}</span>
                             <span className="text-slate-500 text-base">/ kg</span>
-                            {product.salePrice && (
-                                <span className="text-slate-400 text-lg line-through">{formatCurrency(product.price)}</span>
+                            {product.originalPrice && (
+                                <span className="text-slate-400 text-lg line-through">{formatCurrency(product.originalPrice)}</span>
                             )}
                             {product.percentOff && (
                                 <span className="px-2 py-0.5 bg-red-500 text-white text-sm font-bold rounded">-{product.percentOff}%</span>
