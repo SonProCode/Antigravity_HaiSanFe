@@ -46,7 +46,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
         setWeight(clamped);
     }
 
-    function handleAddToCart() {
+    function handleAddToCart(showCart = true) {
         if (!product) return;
         if (weight <= 0 || weight > maxWeight) return;
         setAdding(true);
@@ -77,11 +77,14 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
             });
         }
 
-        setTimeout(() => { setAdding(false); setOpen(true); }, 500);
+        setTimeout(() => {
+            setAdding(false);
+            if (showCart) setOpen(true);
+        }, 500);
     }
 
     function handleBuyNow() {
-        handleAddToCart();
+        handleAddToCart(false);
         router.push('/checkout');
     }
 
@@ -243,7 +246,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                     {/* Action buttons */}
                     <div className="flex gap-3 mb-6">
                         <button
-                            onClick={handleAddToCart}
+                            onClick={() => handleAddToCart()}
                             disabled={adding}
                             className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-ocean-50 hover:bg-ocean-100 border-2 border-ocean-400 text-ocean-700 font-bold rounded-xl transition-colors"
                         >
@@ -317,8 +320,8 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                                     </strong>
                                 </span>
                                 <button
-                                    onClick={handleAddToCart}
-                                    className="px-4 py-2 bg-ocean-500 text-white text-sm font-semibold rounded-lg hover:bg-ocean-600 transition-colors"
+                                    onClick={() => handleAddToCart()}
+                                    className="w-full py-2 bg-ocean-500 text-white text-xs font-semibold rounded-lg hover:bg-ocean-600 transition-colors"
                                 >
                                     Thêm {Object.values(addedUpsell).filter(Boolean).length}sp mua cùng
                                 </button>

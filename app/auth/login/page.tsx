@@ -3,11 +3,12 @@ import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { Suspense } from 'react';
+import { toast } from 'react-hot-toast';
 
 const loginSchema = z.object({
     email: z.string().email('Email không hợp lệ'),
@@ -24,10 +25,17 @@ function LoginContent() {
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl') || '/';
     const isExpired = searchParams.get('expired') === 'true';
+    const isRegistered = searchParams.get('registered') === 'true';
 
     const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
         resolver: zodResolver(loginSchema),
     });
+
+    useEffect(() => {
+        if (isRegistered) {
+            toast.success('Đăng ký tài khoản thành công! Vui lòng đăng nhập.');
+        }
+    }, [isRegistered]);
 
     async function onSubmit(data: LoginForm) {
         setIsLoading(true);
@@ -46,6 +54,7 @@ function LoginContent() {
             }
 
             // Admin redirect
+            toast.success('Đăng nhập thành công!');
             if (data.email.toLowerCase() === 'admin@haisan.vn') {
                 router.push('/admin');
             } else {
