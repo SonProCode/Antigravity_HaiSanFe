@@ -77,71 +77,71 @@ export default function HeroSlider() {
             </div>
 
             {/* Content */}
-            <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
+            <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center pb-16 sm:pb-8">
                 <div className="max-w-xl animate-fade-in-up">
-                    <span className="inline-block px-3 py-1.5 bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold rounded-full mb-4">
+                    <span className="inline-block px-3 py-1 bg-white/15 backdrop-blur-sm border border-white/20 text-white text-[10px] sm:text-xs font-semibold rounded-full mb-3">
                         {slide.badge}
                     </span>
 
-                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight whitespace-pre-line mb-3">
+                    <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight whitespace-pre-line mb-2 sm:mb-3">
                         {slide.title}
                     </h1>
 
-                    <p className="text-ocean-200 text-sm sm:text-base mb-6 leading-relaxed">
+                    <p className="text-ocean-200 text-xs sm:text-base mb-4 sm:mb-6 leading-relaxed line-clamp-2 sm:line-clamp-none">
                         {slide.subtitle}
                     </p>
 
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-2 sm:gap-3">
                         <Link
                             href={slide.ctaHref}
-                            className="px-6 py-3 bg-white text-ocean-800 font-bold rounded-full hover:bg-ocean-50 transition-colors shadow-lg text-sm"
+                            className="px-5 py-2.5 sm:px-6 sm:py-3 bg-white text-ocean-800 font-bold rounded-full hover:bg-ocean-50 transition-colors shadow-lg text-xs sm:text-sm"
                         >
                             {slide.cta} →
                         </Link>
                         <a
                             href="tel:19001234"
-                            className="px-6 py-3 bg-white/15 backdrop-blur-sm border border-white/30 text-white font-medium rounded-full hover:bg-white/25 transition-colors flex items-center gap-2 text-sm"
+                            className="px-5 py-2.5 sm:px-6 sm:py-3 bg-white/15 backdrop-blur-sm border border-white/30 text-white font-medium rounded-full hover:bg-white/25 transition-colors flex items-center gap-2 text-xs sm:text-sm"
                         >
-                            <Phone className="w-4 h-4" />
+                            <Phone className="w-3.5 h-3.5 sm:w-4 h-4" />
                             1900 1234
                         </a>
                     </div>
                 </div>
             </div>
 
-            {/* Nav buttons */}
+            {/* Nav buttons - hide on very small mobiles to save space */}
             <button
                 onClick={prev}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white transition-all"
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white transition-all"
             >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
                 onClick={next}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white transition-all"
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white transition-all"
             >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
 
-            {/* Dots */}
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+            {/* Dots - adjusted position */}
+            <div className="absolute bottom-14 sm:bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-2">
                 {SLIDES.map((_, i) => (
                     <button
                         key={i}
                         onClick={() => setCurrent(i)}
-                        className={`transition-all rounded-full ${i === current ? 'w-6 h-2 bg-white' : 'w-2 h-2 bg-white/40 hover:bg-white/70'
+                        className={`transition-all rounded-full ${i === current ? 'w-6 h-1.5 sm:h-2 bg-white' : 'w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/40 hover:bg-white/70'
                             }`}
                     />
                 ))}
             </div>
 
-            {/* Free shipping banner */}
-            <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-r from-teal-600 to-ocean-600 py-2 px-4 shadow-lg">
-                <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-6 text-white text-xs font-medium">
-                    <span>🚚 Miễn phí ship đơn ≥500K</span>
-                    <span>❄️ Giao hàng lạnh đảm bảo tươi</span>
-                    <span>✅ Đổi trả trong 24h</span>
-                    <span>📞 Hotline 1900 1234</span>
+            {/* Free shipping banner - adjusted text size and padding */}
+            <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-r from-teal-600 to-ocean-600 py-2 sm:py-2.5 px-2 sm:px-4 shadow-lg">
+                <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1 sm:gap-6 text-white text-[9px] sm:text-xs font-medium">
+                    <span className="flex items-center gap-1">🚚 <span className="hidden xs:inline">Miễn phí ship đơn</span> ≥500K</span>
+                    <span className="flex items-center gap-1">❄️ <span className="hidden xs:inline">Hàng lạnh</span> tươi ngon</span>
+                    <span className="flex items-center gap-1">✅ Đổi trả 24h</span>
+                    <span className="flex items-center gap-1">📞 1900 1234</span>
                 </div>
             </div>
         </div>

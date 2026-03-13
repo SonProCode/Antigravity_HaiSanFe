@@ -17,6 +17,9 @@ export default function ProductCard({ product, className }: ProductCardProps) {
     const addItem = useCartStore((s) => s.addItem);
     const [adding, setAdding] = useState(false);
 
+    const [imgError, setImgError] = useState(false);
+    const fallbackImage = 'https://images.unsplash.com/photo-1551462147-37885acc3c41?q=80&w=800'; // Reliable seafood placeholder
+
     const displayPrice = product.salePrice || product.price;
     const hasDiscount = !!product.salePrice && product.salePrice < product.price;
 
@@ -28,7 +31,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
             await addItem({
                 productId: product.id,
                 productName: product.name,
-                productImage: product.images[0],
+                productImage: product.images[0] || fallbackImage,
                 slug: product.slug,
                 weight: 1,
                 pricePerKg: displayPrice,
@@ -50,11 +53,15 @@ export default function ProductCard({ product, className }: ProductCardProps) {
             {/* Image container */}
             <div className="relative aspect-square bg-ocean-50 overflow-hidden">
                 <Image
-                    src={product.images[0]}
+                    src={imgError ? fallbackImage : (product.images[0] || fallbackImage)}
                     alt={product.name}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    onError={() => {
+                        console.log(`Image failed for ${product.name}: ${product.images[0]}`);
+                        setImgError(true);
+                    }}
                 />
 
                 {/* Badges */}
