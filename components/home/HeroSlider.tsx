@@ -135,13 +135,13 @@ export default function HeroSlider() {
                 ))}
             </div>
 
-            {/* Free shipping banner - adjusted text size and padding */}
-            <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-r from-teal-600 to-ocean-600 py-2 sm:py-2.5 px-2 sm:px-4 shadow-lg">
-                <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1 sm:gap-6 text-white text-[9px] sm:text-xs font-medium">
-                    <span className="flex items-center gap-1">🚚 <span className="hidden xs:inline">Miễn phí ship đơn</span> ≥500K</span>
-                    <span className="flex items-center gap-1">❄️ <span className="hidden xs:inline">Hàng lạnh</span> tươi ngon</span>
-                    <span className="flex items-center gap-1">✅ Đổi trả 24h</span>
-                    <span className="flex items-center gap-1">📞 1900 1234</span>
+            {/* Free shipping banner - more descriptive for all screen sizes */}
+            <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-r from-teal-600 to-ocean-600 py-2 sm:py-2.5 px-2 sm:px-4 shadow-lg border-t border-white/10">
+                <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 sm:gap-8 text-white text-[10px] sm:text-xs font-bold tracking-tight">
+                    <span className="flex items-center gap-1.5">🚚 Freeship đơn ≥ 500K</span>
+                    <span className="flex items-center gap-1.5">❄️ Thực phẩm tươi sống</span>
+                    <span className="flex items-center gap-1.5">✅ Đổi trả trong 24h</span>
+                    <span className="flex items-center gap-1.5 text-orange-200">📞 1900 1234</span>
                 </div>
             </div>
         </div>
