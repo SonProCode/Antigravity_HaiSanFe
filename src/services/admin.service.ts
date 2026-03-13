@@ -13,6 +13,15 @@ export const adminService = {
         return response.data;
     },
 
+    async uploadImage(file: File): Promise<{ url: string }> {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await apiClient.post('/upload/image', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        return response.data;
+    },
+
     // Products CRUD for Admin
     async getProducts(query: any = {}) {
         const response = await apiClient.get('/products', { params: { ...query, admin: true } });

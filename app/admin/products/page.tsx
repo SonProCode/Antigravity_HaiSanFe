@@ -192,17 +192,41 @@ function ProductModal({ product, onClose, onSuccess }: { product?: Product; onCl
         price: product?.price || 0,
         salePrice: product?.salePrice || '',
         inventoryKg: product?.inventoryKg || 0,
-        shortDescription: product?.shortDescription || '',
+        shortDescription: product?.description || '', // Match backend field
         origin: product?.origin || 'Quảng Ninh',
         preservation: product?.preservation || 'Bảo quản lạnh 0-4°C.',
+        images: product?.images || [] as string[],
     });
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
+
+    async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const { url } = await adminService.uploadImage(file);
+            setForm(f => ({ ...f, images: [...f.images, url] }));
+        } catch (err) {
+            console.error('Upload error:', err);
+        } finally {
+            setUploading(false);
+            e.target.value = '';
+        }
+    }
+
+    function removeImage(url: string) {
+        setForm(f => ({ ...f, images: f.images.filter(img => img !== url) }));
+    }
 
     async function handleSave() {
+        if (!form.name || !form.category) return;
         setSaving(true);
         try {
             const body = {
                 ...form,
+                description: form.shortDescription, // Backend expects description
                 salePrice: form.salePrice ? Number(form.salePrice) : null,
                 price: Number(form.price),
                 inventoryKg: Number(form.inventoryKg),
@@ -291,11 +315,42 @@ function ProductModal({ product, onClose, onSuccess }: { product?: Product; onCl
                     </div>
 
                     <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Hình ảnh sản phẩm (Tối đa 5)</label>
+                        <div className="grid grid-cols-4 gap-2 mb-3">
+                            {form.images.map((url, idx) => (
+                                <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-slate-200 group">
+                                    <img src={url} alt="product" className="w-full h-full object-cover" />
+                                    <button
+                                        onClick={() => removeImage(url)}
+                                        className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ))}
+                            {form.images.length < 5 && (
+                                <label className={`aspect-square border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-ocean-300 transition-colors ${uploading ? 'pointer-events-none opacity-50' : ''}`}>
+                                    <input type="file" className="hidden" accept="image/*" onChange={handleUpload} />
+                                    {uploading ? (
+                                        <div className="w-4 h-4 border-2 border-ocean-500 border-t-transparent rounded-full animate-spin" />
+                                    ) : (
+                                        <>
+                                            <span className="text-xl text-slate-400">+</span>
+                                            <span className="text-[10px] text-slate-400">Tải lên</span>
+                                        </>
+                                    )}
+                                </label>
+                            )}
+                        </div>
+                    </div>
+
+                    <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">Mô tả ngắn</label>
                         <textarea
                             value={form.shortDescription}
                             onChange={(e) => setForm(f => ({ ...f, shortDescription: e.target.value }))}
                             rows={3}
+                            placeholder="Nhập mô tả sản phẩm..."
                             className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm outline-none focus:border-ocean-400 resize-none"
                         />
                     </div>
